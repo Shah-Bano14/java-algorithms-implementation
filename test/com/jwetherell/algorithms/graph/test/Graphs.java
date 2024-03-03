@@ -1,7 +1,6 @@
 package com.jwetherell.algorithms.graph.test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -602,6 +601,140 @@ public class Graphs {
     }
 
     @Test
+    public void testDijkstraAlgorithmDirectedWithNegativeWeights() {
+
+        // to verify the condition that Dijkstra algorithm doesnt support negative weights and hence increase branch and
+        //instruction coverage
+        //here we verify two differnt methods which has two diffrent input parameters
+
+        final DirectedWithNegativeWeights directedWithNegWeights = new DirectedWithNegativeWeights();
+        {   // DIRECTED GRAPH (WITH NEGATIVE WEIGHTS)
+            final Graph.Vertex<Integer> start = directedWithNegWeights.v1;
+            final Graph.Vertex<Integer> end = directedWithNegWeights.v3;
+
+            assertThrows(IllegalArgumentException.class, () -> {
+                Dijkstra.getShortestPaths(directedWithNegWeights.graph, start);});
+
+            assertThrows(IllegalArgumentException.class, () -> {
+                Dijkstra.getShortestPath(directedWithNegWeights.graph, start, end);});
+        }
+    }
+
+    @Test
+    public void testTopologicalSortUnDirected() {
+        final UndirectedGraph undirected = new UndirectedGraph();
+        {   // UNDIRECTED GRAPH
+            final List<Vertex<Integer>> verticies = new ArrayList<Vertex<Integer>>();
+            final Graph.Vertex<Integer> cv1 = new Graph.Vertex<Integer>(1);
+            verticies.add(cv1);
+            final Graph.Vertex<Integer> cv2 = new Graph.Vertex<Integer>(2);
+            verticies.add(cv2);
+            final Graph.Vertex<Integer> cv3 = new Graph.Vertex<Integer>(3);
+            verticies.add(cv3);
+            final Graph.Vertex<Integer> cv4 = new Graph.Vertex<Integer>(4);
+            verticies.add(cv4);
+            final Graph.Vertex<Integer> cv5 = new Graph.Vertex<Integer>(5);
+            verticies.add(cv5);
+            final Graph.Vertex<Integer> cv6 = new Graph.Vertex<Integer>(6);
+            verticies.add(cv6);
+
+            final List<Edge<Integer>> edges = new ArrayList<Edge<Integer>>();
+            final Graph.Edge<Integer> ce1_2 = new Graph.Edge<Integer>(1, cv1, cv2);
+            edges.add(ce1_2);
+            final Graph.Edge<Integer> ce2_4 = new Graph.Edge<Integer>(2, cv2, cv4);
+            edges.add(ce2_4);
+            final Graph.Edge<Integer> ce4_3 = new Graph.Edge<Integer>(3, cv4, cv3);
+            edges.add(ce4_3);
+            final Graph.Edge<Integer> ce3_6 = new Graph.Edge<Integer>(4, cv3, cv6);
+            edges.add(ce3_6);
+            final Graph.Edge<Integer> ce5_6 = new Graph.Edge<Integer>(5, cv5, cv6);
+            edges.add(ce5_6);
+            final Graph.Edge<Integer> ce4_5 = new Graph.Edge<Integer>(6, cv4, cv5);
+            edges.add(ce4_5);
+
+            final Graph<Integer> undigraph = new Graph<Integer>(Graph.TYPE.UNDIRECTED, verticies, edges);
+
+            assertThrows(IllegalArgumentException.class, () -> {
+                TopologicalSort.sort(undigraph);});
+
+        }
+    }
+
+    @Test
+    public void testTopologicalSortNullGraph() {
+        final UndirectedGraph undirected = new UndirectedGraph();
+        {   // NULL GRAPH
+
+            // This method verifies topolodical sort method when passing graph as null and hence covers a branch and set of instrcutions
+
+            assertThrows(IllegalArgumentException.class, () -> {
+                TopologicalSort.sort(null);});
+
+        }
+    }
+
+    @Test
+    public void testDijkstraDirectedWithNullGraph() {
+
+        // This method verifies the algorithm when passing a null graph and hence covers a branch and set of instructions
+        // here we verify 3 cases, 1. passing graph as null for method, 2. passing graph as null for another method
+        // 3. passing start vertices as null
+
+        final DirectedGraph directed = new DirectedGraph();
+        {   // DIRECTED GRAPH (WITH NEGATIVE WEIGHTS)
+            final Graph.Vertex<Integer> start = directed.v1;
+            final Graph.Vertex<Integer> end = directed.v3;
+
+            assertThrows(NullPointerException.class, () -> {
+                Dijkstra.getShortestPath(null, start, end);
+            });
+
+            assertThrows(NullPointerException.class, () -> {
+                Dijkstra.getShortestPaths(null, start);
+            });
+
+            assertThrows(NullPointerException.class, () -> {
+                Dijkstra.getShortestPath(directed.graph, null, end);
+            });
+
+
+        }
+    }
+
+    @Test
+    public void testBellmanFordDirectedWithNullGraph() {
+
+        // This method verifies the algorithm when passing a null graph and hence covers a branch and set of instructions
+        // here we verify 3 cases, 1. passing graph as null for method, 2. passing graph as null for another method
+        // 3. passing start vertices as null, 4. passign end vertices as null
+
+        final DirectedGraph directed = new DirectedGraph();
+        {   // DIRECTED GRAPH (WITH NEGATIVE WEIGHTS)
+            final Graph.Vertex<Integer> start = directed.v1;
+            final Graph.Vertex<Integer> end = directed.v3;
+
+            assertThrows(NullPointerException.class, () -> {
+                BellmanFord.getShortestPath(null, start, end);
+            });
+
+            assertThrows(NullPointerException.class, () -> {
+                BellmanFord.getShortestPaths(null, start);
+            });
+
+            assertThrows(NullPointerException.class, () -> {
+                BellmanFord.getShortestPaths(directed.graph, null);
+            });
+
+            assertThrows(NullPointerException.class, () -> {
+                BellmanFord.getShortestPath(directed.graph, start, null);
+            });
+
+        }
+    }
+
+
+
+    @Test
     public void testJohnonsonsAllPairsShortestPathOnDirecteWithNegWeights() {
         final DirectedWithNegativeWeights directedWithNegWeights = new DirectedWithNegativeWeights();
         {
@@ -694,9 +827,9 @@ public class Graphs {
                         Edge<Integer> e1 = (Edge<Integer>) iter1.next();
                         Edge<Integer> e2 = (Edge<Integer>) iter2.next();
                         assertTrue("Johnson's all-pairs shortest path error. e1.from="+e1.getFromVertex()+" e2.from="+e2.getFromVertex(),
-                                   e1.getFromVertex().equals(e2.getFromVertex()));
+                                e1.getFromVertex().equals(e2.getFromVertex()));
                         assertTrue("Johnson's all-pairs shortest path error. e1.to="+e1.getToVertex()+" e2.to="+e2.getToVertex(),
-                                   e1.getToVertex().equals(e2.getToVertex()));
+                                e1.getToVertex().equals(e2.getToVertex()));
                     }
                 }
             }
@@ -853,6 +986,96 @@ public class Graphs {
     }
 
     @Test
+    public void cycleCheckOnNullGraph() {
+        //This test does a cycle check on null graph and hence satisfies a base test
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            CycleDetection.detect(null);
+        });
+    }
+
+    @Test
+    public void cycleCheckOnDirectedGraph() {
+        //cycle check on directed graph - throws exception
+        // When passing directed graph for cycle detection algoithm, it should return false, and hence we verify that condition
+        final List<Vertex<Integer>> verticies = new ArrayList<Vertex<Integer>>();
+        final Graph.Vertex<Integer> cv1 = new Graph.Vertex<Integer>(1);
+        verticies.add(cv1);
+        final Graph.Vertex<Integer> cv2 = new Graph.Vertex<Integer>(2);
+        verticies.add(cv2);
+        final Graph.Vertex<Integer> cv3 = new Graph.Vertex<Integer>(3);
+        verticies.add(cv3);
+        final Graph.Vertex<Integer> cv4 = new Graph.Vertex<Integer>(4);
+        verticies.add(cv4);
+        final Graph.Vertex<Integer> cv5 = new Graph.Vertex<Integer>(5);
+        verticies.add(cv5);
+        final Graph.Vertex<Integer> cv6 = new Graph.Vertex<Integer>(6);
+        verticies.add(cv6);
+
+        final List<Edge<Integer>> edges = new ArrayList<Edge<Integer>>();
+        final Graph.Edge<Integer> ce1_2 = new Graph.Edge<Integer>(1, cv1, cv2);
+        edges.add(ce1_2);
+        final Graph.Edge<Integer> ce2_4 = new Graph.Edge<Integer>(2, cv2, cv4);
+        edges.add(ce2_4);
+        final Graph.Edge<Integer> ce4_3 = new Graph.Edge<Integer>(3, cv4, cv3);
+        edges.add(ce4_3);
+        final Graph.Edge<Integer> ce3_6 = new Graph.Edge<Integer>(4, cv3, cv6);
+        edges.add(ce3_6);
+        final Graph.Edge<Integer> ce5_6 = new Graph.Edge<Integer>(5, cv5, cv6);
+        edges.add(ce5_6);
+        final Graph.Edge<Integer> ce4_5 = new Graph.Edge<Integer>(6, cv4, cv5);
+        edges.add(ce4_5);
+
+        final Graph<Integer> digraph = new Graph<Integer>(Graph.TYPE.DIRECTED, verticies, edges);
+        assertThrows(IllegalArgumentException.class, () -> {
+            CycleDetection.detect(digraph);
+        });
+    }
+
+    @Test
+    public void cycleCheckWithNoOrNullVertices() {
+        //cycle check on directed graph - throws exception
+        // here we do a cycle check with passing no vertices information and hence covers a condition when size of vertices is 0
+        final List<Vertex<Integer>> verticies = new ArrayList<Vertex<Integer>>();
+
+        final List<Edge<Integer>> edges = new ArrayList<Edge<Integer>>();
+
+        final Graph<Integer> undigraph = new Graph<Integer>(Graph.TYPE.UNDIRECTED);
+
+        assertFalse(CycleDetection.detect(undigraph));
+
+
+
+    }
+
+    @Test
+    public void cycleCheckWithNoOrNullEdges() {
+        //cycle check on directed graph - throws exception
+        //cycle check on directed graph - throws exception
+        // here we do a cycle check with passing no edges information and hence covers a condition when size of edges is 0
+        final List<Vertex<Integer>> verticies = new ArrayList<Vertex<Integer>>();
+        final Graph.Vertex<Integer> cv1 = new Graph.Vertex<Integer>(1);
+        verticies.add(cv1);
+        final Graph.Vertex<Integer> cv2 = new Graph.Vertex<Integer>(2);
+        verticies.add(cv2);
+        final Graph.Vertex<Integer> cv3 = new Graph.Vertex<Integer>(3);
+        verticies.add(cv3);
+        final Graph.Vertex<Integer> cv4 = new Graph.Vertex<Integer>(4);
+        verticies.add(cv4);
+        final Graph.Vertex<Integer> cv5 = new Graph.Vertex<Integer>(5);
+        verticies.add(cv5);
+        final Graph.Vertex<Integer> cv6 = new Graph.Vertex<Integer>(6);
+        verticies.add(cv6);
+
+        final List<Edge<Integer>> edges = new ArrayList<Edge<Integer>>();
+
+        final Graph<Integer> undigraph = new Graph<Integer>(Graph.TYPE.UNDIRECTED);
+        assertFalse(CycleDetection.detect(undigraph));
+
+    }
+
+
+    @Test
     public void topologicalSortOnDirectedGraph() {
         {   // DIRECTED GRAPH
             final List<Vertex<Integer>> verticies = new ArrayList<Vertex<Integer>>();
@@ -931,14 +1154,14 @@ public class Graphs {
 
         {
             final Graph<Integer> g = makeDirectedGraph(28, 79, new int[]{123, 60, 227, 766, 400, 405, 24, 968, 359, 533, 689, 409,
-                                                                         188, 677, 231, 295, 240, 52, 373, 243, 493, 645, 307, 781,
-                                                                         523, 494, 950, 899});
+                    188, 677, 231, 295, 240, 52, 373, 243, 493, 645, 307, 781,
+                    523, 494, 950, 899});
             Assert.assertTrue(ConnectedComponents.getConnectedComponents(g).size()==3);
         }
 
         {
             final Graph<Integer> g = makeDirectedGraph(15, 564, new int[]{617, 400, 658, 30, 891, 517, 304, 156, 254, 610, 72, 371,
-                                                                          411, 689, 381});
+                    411, 689, 381});
             Assert.assertTrue(ConnectedComponents.getConnectedComponents(g).size()==10);
         }
 
@@ -949,7 +1172,7 @@ public class Graphs {
 
         {
             final Graph<Integer> g = makeDirectedGraph(17, 599, new int[]{903, 868, 67, 690, 841, 815, 469, 554, 647, 235, 787, 221, 669,
-                                                                          87, 60, 28, 324});
+                    87, 60, 28, 324});
             Assert.assertTrue(ConnectedComponents.getConnectedComponents(g).size()==10);
         }
     }
@@ -981,7 +1204,7 @@ public class Graphs {
     }
 
     /*
-     * Makes a zero weighted directed graph, so that there is an edge between two vertices if the difference between the 
+     * Makes a zero weighted directed graph, so that there is an edge between two vertices if the difference between the
      * vertices values is >= K
      */
     @SuppressWarnings("unused")
